@@ -11,7 +11,7 @@ Version of [mintty-quake-console](https://github.com/lonepie/mintty-quake-consol
 
 ## Configuration
 + **putty_path** : Absolute path to putty.exe (or kitty.exe)
-+ **putty_args** : unused at this time
++ **putty_args** : Putty arguments
 + **putty_type** : specify either "PuTTY" or "KiTTY", depending on which you're using
 + **hotkey** = key combination to show/hide putty
 + **session_mode** : unused at this time
@@ -26,4 +26,3 @@ Version of [mintty-quake-console](https://github.com/lonepie/mintty-quake-consol
 ## TODO
 * Launch putty session from the script
 * GUI for settings
-

@@ -41,7 +41,7 @@ IniRead, puttyPath, %iniFile%, General, putty_path, "putty.exe"
 IniRead, puttyType, %iniFile%, General, putty_type, "PuTTY"
 IniRead, sessionMode, %iniFile%, General, session_mode, "registry"
 IniRead, sessionPath, %iniFile%, General, session_path, "HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions"
-;IniRead, puttyArgs, %iniFile%, General, putty_args, -
+IniRead, puttyArgs, %iniFile%, General, putty_args, -
 IniRead, consoleHotkey, %iniFile%, General, hotkey, ^``
 ;IniRead, startWithWindows, %iniFile%, Display, start_with_windows, 0
 IniRead, startHidden, %iniFile%, Display, start_hidden, 1
@@ -49,6 +49,7 @@ IniRead, initialHeight, %iniFile%, Display, initial_height, 380
 IniRead, pinned, %iniFile%, Display, pinned_by_default, 1
 IniRead, animationStep, %iniFile%, Display, animation_step, 20
 IniRead, animationTimeout, %iniFile%, Display, animation_timeout, 10
+IniRead, transparency, %iniFile%, Display, transparency, 255
 IfNotExist %iniFile%
 {
 	SaveSettings()
@@ -99,7 +100,7 @@ init()
 	WinGet, hw_current, ID, A
 	if !WinExist("ahk_class" . puttyType) {
 		;Run %puttyPath_args%, %cygwinBinDir%, Hide, hw_putty
-		Run %puttyPath%
+		Run %puttyPath% %puttyArgs%
 		WinWait ahk_class %puttyType%
 	}
 	else {
@@ -124,8 +125,9 @@ toggle()
 	{
 		; get last active window
 		WinGet, hw_current, ID, A
-
 		WinActivate ahk_pid %hw_putty%
+		WinSet, ExStyle, +0x80 ; 0x80 is WS_EX_TOOLWINDOW
+		WinSet, Transparent, %transparency%, A
 		Slide("ahk_pid" . hw_putty, "In")
 	}
 }
@@ -185,7 +187,7 @@ toggleScript(state) {
 		scriptEnabled := True
 		Menu, Tray, Check, Enabled
 		
-		if (state = "init" and initCount = 1 and startHidden) {
+		if (state = "init" and startHidden = 1) {
 			return
 		}
 		
