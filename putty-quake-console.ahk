@@ -1,24 +1,3 @@
-; Mintty quake console: Visor-like functionality for Windows
-; Version: 1.1
-; Author: Jon Rogers (lonepie@gmail.com)
-; URL: https://github.com/lonepie/putty-quake-console
-; Credits:
-;	Originally forked from: https://github.com/marcharding/putty-quake-console
-;	putty: http://code.google.com/p/putty/
-;	Visor: http://visor.binaryage.com/
-
-; TODO: 
-;  - GUI: 
-;		- choose between PuTTY or KiTTY
-;		- putty exe location
-;		- putty session source
-;			- registry (default or specfiy path)
-;			- directory (specify path)
-; - Functionality:
-; 		- choose session
-;			- launchy putty, get pid, apply quake-console features
-;		- apply to current putty window
-
 ;*******************************************************************************
 ;				Settings					
 ;*******************************************************************************
@@ -126,9 +105,9 @@ toggle()
 		; get last active window
 		WinGet, hw_current, ID, A
 		WinActivate ahk_pid %hw_putty%
-		WinSet, ExStyle, +0x80 ; 0x80 is WS_EX_TOOLWINDOW
 		WinSet, Transparent, %transparency%, A
 		Slide("ahk_pid" . hw_putty, "In")
+        WinSet, ExStyle, +0x80 ; 0x80 is WS_EX_TOOLWINDOW
 	}
 }
 
