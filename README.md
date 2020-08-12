@@ -14,10 +14,13 @@
 + **hotkey** = key combination to show/hide putty
 + **session_mode** : unused at this time
 + **session_path** : unused at this time
-+ **start_hidden** : show mintty.exe when script is started (0) or wait for hotkey (1)  
-+ **initial_height** : height (in pixels) of the mintty console  
++ **start_hidden** : show mintty.exe when script is started (0) or wait for hotkey (1)
++ **top_pad** : Offset from top of screen, for people with taskbars/etc up there.
++ **initial_width** : width of the console as percent of screen
++ **initial_width** : width of the console as percent of screen
++ **initial_height** : height of the console as percent of screen
 + **pinned_by_default** : set to 0 to automatically hide mintty when it loses focus
-+ **animation_step** : number of pixels to shift each step of the slide animation  
++ **animation_step** : number of pixels to shift each step of the slide animation
 + **animation_timeout** : how long (in ms) to wait between each animation_step
 
 
