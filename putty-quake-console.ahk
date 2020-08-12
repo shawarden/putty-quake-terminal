@@ -1,5 +1,5 @@
 ;*******************************************************************************
-;				Settings					
+;				Settings
 ;*******************************************************************************
 #NoEnv
 #SingleInstance force
@@ -24,7 +24,9 @@ IniRead, puttyArgs, %iniFile%, General, putty_args, -
 IniRead, consoleHotkey, %iniFile%, General, hotkey, ^``
 ;IniRead, startWithWindows, %iniFile%, Display, start_with_windows, 0
 IniRead, startHidden, %iniFile%, Display, start_hidden, 1
-IniRead, initialHeight, %iniFile%, Display, initial_height, 380
+IniRead, topPadding, %iniFile%, Display, top_pad, 80
+IniRead, initialHeight, %iniFile%, Display, initial_height, 50
+IniRead, initialWidth, %iniFile%, Display, initial_width, 100
 IniRead, pinned, %iniFile%, Display, pinned_by_default, 1
 IniRead, animationStep, %iniFile%, Display, animation_step, 20
 IniRead, animationTimeout, %iniFile%, Display, animation_timeout, 10
@@ -39,16 +41,18 @@ IfNotExist %iniFile%
 ; puttyPath := cygwinBinDir . "\putty.exe /bin/zsh -li"
 ;puttyPath_args := puttyPath . " " . puttyArgs
 
-; initial height of console window
-heightConsoleWindow := initialHeight
+; initial height & width of console window
+heightConsoleWindow	:= initialHeight / 100
+widthConsoleWindow	:= initialWidth / 100
+widthOffset			:= 0
 
 ;*******************************************************************************
-;				Hotkeys						
+;				Hotkeys
 ;*******************************************************************************
 Hotkey, %consoleHotkey%, ConsoleHotkey
 
 ;*******************************************************************************
-;				Menu					
+;				Menu
 ;*******************************************************************************
 if !InStr(A_ScriptName, ".exe")
 	Menu, Tray, Icon, terminal.ico
@@ -69,7 +73,7 @@ Menu, Tray, Add, Exit, ExitSub
 init()
 return
 ;*******************************************************************************
-;				Functions / Labels						
+;				Functions / Labels
 ;*******************************************************************************
 init()
 {
@@ -85,7 +89,7 @@ init()
 	else {
 		WinGet, hw_putty, PID, ahk_class %puttyType%
 	}
-	
+
 	WinGetPos, OrigXpos, OrigYpos, OrigWinWidth, OrigWinHeight, ahk_pid %hw_putty%
 	toggleScript("init")
 }
@@ -113,17 +117,17 @@ toggle()
 
 Slide(Window, Dir)
 {
-	global animationStep, animationTimeout, pinned
+	global animationStep, animationTimeout, pinned, topPadding, widthOffset
 	WinGetPos, Xpos, Ypos, WinWidth, WinHeight, %Window%
 	If (Dir = "In") And (Ypos < 0)
 		WinShow %Window%
 	If (Xpos != 0)
-		WinMove, %Window%,,0
+		WinMove, %Window%,,%widthOffset%
 	Loop
 	{
-	  If (Dir = "In") And (Ypos >= 0) Or (Dir = "Out") And (Ypos <= (-WinHeight))
+	  If (Dir = "In") And (Ypos >= topPadding) Or (Dir = "Out") And (Ypos <= (-WinHeight))
 		 Break
-	  
+
 	  ; dRate := WinHeight // 4
 	  dRate := animationStep
 	  ; dY := % (Dir = "In") ? A_Index*dRate - WinHeight : (-A_Index)*dRate
@@ -132,8 +136,8 @@ Slide(Window, Dir)
 	  WinGetPos, Xpos, Ypos, WinWidth, WinHeight, %Window%
 	  Sleep, %animationTimeout%
 	}
-	If (Dir = "In") And (Ypos >= 0) {
-		WinMove, %Window%,,, 0 
+	If (Dir = "In") And (Ypos >= topPadding) {
+		WinMove, %Window%,,, topPadding
 		if (!pinned)
 			SetTimer, HideWhenInactive, 250
 	}
@@ -160,16 +164,19 @@ toggleScript(state) {
 		WinSet, Style, -0x200000, ahk_pid %hw_putty%
 		WinSet, Style, -0x40000, ahk_pid %hw_putty%
 		; WinGetPos, Xpos, Ypos, WinWidth, WinHeight, ahk_pid %hw_putty%
+		targetHeight	:= A_ScreenHeight * heightConsoleWindow
+		targetWidth		:= A_ScreenWidth * widthConsoleWindow
+		widthOffset		:= (A_ScreenWidth / 2) - (targetWidth / 2)
 		if (OrigYpos >= 0 or OrigWinWidth < A_ScreenWidth)
-				WinMove, ahk_pid %hw_putty%, , 0, -%heightConsoleWindow%, A_ScreenWidth, %heightConsoleWindow% ; resize/move
-		
+				WinMove, ahk_pid %hw_putty%, , %widthOffset%, -%targetHeight%, %targetWidth%, %targetHeight% ; resize/move
+
 		scriptEnabled := True
 		Menu, Tray, Check, Enabled
-		
+
 		if (state = "init" and startHidden = 1) {
 			return
 		}
-		
+
 		WinShow ahk_pid %hw_putty%
 		WinActivate ahk_pid %hw_putty%
 		Slide("ahk_pid" . hw_putty, "In")
@@ -246,7 +253,7 @@ ShowOptionsGui:
 return
 
 ;*******************************************************************************
-;				Extra Hotkeys						
+;				Extra Hotkeys
 ;*******************************************************************************
 #IfWinActive ahk_class putty
 ; why this method doesn't work, I don't know...
@@ -256,34 +263,36 @@ return
 ; IncreaseHeight:
 ^!NumpadAdd::
 	if(WinActive("ahk_pid" . hw_putty)) {
-		if(heightConsoleWindow < A_ScreenHeight) {
-			heightConsoleWindow += animationStep
-			WinMove, ahk_pid %hw_putty%,,,,, heightConsoleWindow
+		if(heightConsoleWindow < 1) {
+			heightConsoleWindow += 0.01
+			WinMove, ahk_pid %hw_putty%,,,,, A_ScreenHeight * heightConsoleWindow
 		}
 	}
 return
 ; DecreaseHeight:
 ^!NumpadSub::
 	if(WinActive("ahk_pid" . hw_putty)) {
-		if(heightConsoleWindow > 100) {
-			heightConsoleWindow -= animationStep
-			WinMove, ahk_pid %hw_putty%,,,,, heightConsoleWindow
+		if(heightConsoleWindow > 0.10) {
+			heightConsoleWindow -= 0.01
+			WinMove, ahk_pid %hw_putty%,,,,, A_ScreenHeight * heightConsoleWindow
 		}
 	}
 return
 #IfWinActive
 
 ;*******************************************************************************
-;				Options					
+;				Options
 ;*******************************************************************************
 SaveSettings() {
 	global
 	IniWrite, %puttyPath%, %iniFile%, General, putty_path
-	IniWrite, %puttyArgs%, %iniFile%, General, putty_args	
+	IniWrite, %puttyArgs%, %iniFile%, General, putty_args
 	IniWrite, %consoleHotkey%, %iniFile%, General, hotkey
 	IniWrite, %startWithWindows%, %iniFile%, Display, start_with_windows
 	IniWrite, %startHidden%, %iniFile%, Display, start_hidden
+	IniWrite, %topPadding%, %iniFile%, Display, top_pad
 	IniWrite, %initialHeight%, %iniFile%, Display, initial_height
+	IniWrite, %initialWidth%, %iniFile%, Display, initial_width
 	IniWrite, %pinned%, %iniFile%, Display, pinned_by_default
 	IniWrite, %animationStep%, %inifile%, Display, animation_step
 	IniWrite, %animationTimeout%, %iniFile%, Display, animation_timeout
@@ -335,14 +344,14 @@ OptionsGui() {
 	Gui, Show, h410 w482, TerminalHUD Options
 	Gui, +LastFound
 	GuiID := WinExist()
-	
+
 	Loop {
 		;sleep to reduce CPU load
-        Sleep, 100 
+        Sleep, 100
 
-        ;exit endless loop, when settings GUI closes 
-        If not WinExist("ahk_id" GuiID) 
-            Break 
+        ;exit endless loop, when settings GUI closes
+        If not WinExist("ahk_id" GuiID)
+            Break
 	}
 
 	ButtonSave:
@@ -350,13 +359,13 @@ OptionsGui() {
 		SaveSettings()
 		Reload
 	return
-	
+
 	ButtonBrowse:
 		FileSelectFile, SelectedPath, 3, %A_MyDocuments%, Path to putty.exe, Executables (*.exe)
-		if SelectedPath != 
+		if SelectedPath !=
 			GuiControl,, MinttyPath, %SelectedPath%
 	return
-	
+
 	GuiClose:
 	GuiEscape:
 	ButtonCancel:
