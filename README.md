@@ -2,14 +2,12 @@
 [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/) or [KiTTY](http://kitty.9bis.com/)
 
 ## Usage
-1. Edit configuration file (putty-quake-console.ini)
-2. Open PuTTY session.
-3. Launch putty-quake-console.ahk
-4. Use configured keybinding to show/hide PuTTY
+1. Launch putty-quake-console.ahk
+2. Use configured keybinding to show/hide whatever you've set in the ini file. Windows Terminal in my case.
 
 ## Configuration
 + **putty_path** : Absolute path to putty.exe (or kitty.exe)
-+ **putty_args** : Putty arguments
++ **putty_args** : Putty arguments. Depreciated for Windows Terminal
 + **putty_type** : specify either "PuTTY" or "KiTTY", depending on which you're using
 + **hotkey** = key combination to show/hide putty
 + **session_mode** : unused at this time
@@ -22,8 +20,3 @@
 + **pinned_by_default** : set to 0 to automatically hide mintty when it loses focus
 + **animation_step** : number of pixels to shift each step of the slide animation
 + **animation_timeout** : how long (in ms) to wait between each animation_step
-
-
-## TODO
-* Launch putty session from the script
-* GUI for settings
