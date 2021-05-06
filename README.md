@@ -1,5 +1,5 @@
 ## Requirements
-[PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/) or [KiTTY](http://kitty.9bis.com/)
+[PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/), [KiTTY](http://kitty.9bis.com/) or [Windows Terminal](https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701)
 
 ## Usage
 1. Launch putty-quake-console.ahk
