@@ -83,7 +83,7 @@ init()
 	WinGet, hw_current, ID, A
 	if !WinExist("ahk_class" . puttyType) {
 		;Run %puttyPath_args%, %cygwinBinDir%, Hide, hw_putty
-		Run %puttyPath% %puttyArgs%
+		Run %puttyPath% ; %puttyArgs%
 		WinWait ahk_class %puttyType%
 	}
 	else {
@@ -160,9 +160,9 @@ toggleScript(state) {
 		WinHide ahk_pid %hw_putty%
 		;WinSet,Transparent,210,ahk_pid %hw_putty%
 		WinSet, Style, +0x1000000, ahk_pid %hw_putty%
-		WinSet, Style, -0xC00000, ahk_pid %hw_putty%
-		WinSet, Style, -0x200000, ahk_pid %hw_putty%
-		WinSet, Style, -0x40000, ahk_pid %hw_putty%
+		;WinSet, Style, -0xC00000, ahk_pid %hw_putty%
+		;WinSet, Style, -0x200000, ahk_pid %hw_putty%
+		;WinSet, Style, -0x40000, ahk_pid %hw_putty%
 		; WinGetPos, Xpos, Ypos, WinWidth, WinHeight, ahk_pid %hw_putty%
 		targetHeight	:= A_ScreenHeight * heightConsoleWindow
 		targetWidth		:= A_ScreenWidth * widthConsoleWindow
@@ -185,7 +185,7 @@ toggleScript(state) {
 		WinSet, Style, +0xC00000, ahk_pid %hw_putty%
 		WinSet, Style, +0x200000, ahk_pid %hw_putty%
 		WinSet, Style, +0x40000, ahk_pid %hw_putty%
-		WinSet, Style, -0x1000000, ahk_pid %hw_putty%
+		;WinSet, Style, -0x1000000, ahk_pid %hw_putty%
 		if (OrigYpos >= 0)
 			WinMove, ahk_pid %hw_putty%, , %OrigXpos%, %OrigYpos%, %OrigWinWidth%, %OrigWinHeight% ; restore size / position
 		else
